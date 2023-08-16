@@ -2,7 +2,11 @@
     "name": "verdient/http-api",
     "description": "HTTP API PACKAGE",
     "type": "library",
-    "keywords": ["http-api", "API", "PACKAGE"],
+    "keywords": [
+        "http-api",
+        "API",
+        "PACKAGE"
+    ],
     "homepage": "https://github.com/Verdient/http-api",
     "license": "MIT",
     "authors": [
@@ -18,8 +22,7 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "verdient/chorus": "~0.1.0",
-        "verdient/http": "~0.4.0"
+        "verdient/http": "^1.0"
     },
     "autoload": {
         "psr-4": {

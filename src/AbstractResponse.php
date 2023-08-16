@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
-use chorus\UnsatisfiedExcepiton;
 use Verdient\http\Response;
 
 /**
@@ -47,13 +46,14 @@ abstract class AbstractResponse
      * @var Response 响应对象
      * @author Verdient。
      */
-    public function __construct(Response $response){
+    public function __construct(Response $response)
+    {
         $this->response = $response;
         $result = $this->normailze($response);
         $this->isOK = $result->isOK;
-        if($this->isOK){
+        if ($this->isOK) {
             $this->data = $result->data;
-        }else{
+        } else {
             $this->errorCode = $result->errorCode ?: $response->getStatusCode();
             $this->errorMessage = $result->errorMessage ?: $response->getRawContent();
         }
@@ -64,7 +64,8 @@ abstract class AbstractResponse
      * @return Response
      * @author Verdient。
      */
-    public function getResponse(){
+    public function getResponse()
+    {
         return $this->response;
     }
 
@@ -73,7 +74,8 @@ abstract class AbstractResponse
      * @return bool
      * @author Verdient。
      */
-    public function getIsOK(){
+    public function getIsOK()
+    {
         return $this->isOK;
     }
 
@@ -82,7 +84,8 @@ abstract class AbstractResponse
      * @return int
      * @author Verdient。
      */
-    public function getErrorCode(){
+    public function getErrorCode()
+    {
         return $this->errorCode;
     }
 
@@ -91,7 +94,8 @@ abstract class AbstractResponse
      * @return string
      * @author Verdient。
      */
-    public function getErrorMessage(){
+    public function getErrorMessage()
+    {
         return $this->errorMessage;
     }
 
@@ -100,20 +104,18 @@ abstract class AbstractResponse
      * @return array
      * @author Verdient。
      */
-    public function getData(){
+    public function getData()
+    {
         return $this->data;
     }
 
     /**
      * @inheritdoc
-     * @throws Exception
      * @return mixed
      * @author Verdient。
      */
-    public function __get($name){
-        if(!$this->getIsOK()){
-            throw new UnsatisfiedExcepiton('The request was unsuccessful, please check and try again');
-        }
+    public function __get($name)
+    {
         return $this->data[$name] ?? null;
     }
 

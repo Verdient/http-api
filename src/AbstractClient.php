@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
-use chorus\BaseObject;
-use chorus\Configurable;
-use chorus\ObjectHelper;
 use Verdient\http\Request;
+use Verdient\http\traits\Configurable;
 
 /**
  * 客户端
  * @author Verdient。
  */
-abstract class AbstractClient extends BaseObject
+abstract class AbstractClient
 {
     use Configurable;
 
@@ -54,29 +52,20 @@ abstract class AbstractClient extends BaseObject
     protected $requestPath;
 
     /**
-     * @inheritdoc
-     * @author Verdient。
-     */
-    public function __construct($config)
-    {
-        $this->configuration($config);
-    }
-
-    /**
      * 获取请求路径
      * @return string
      * @author Verdient。
      */
     public function getRequestPath(): string
     {
-        if(!$this->requestPath){
-            if(!$this->host){
+        if (!$this->requestPath) {
+            if (!$this->host) {
                 throw new \Exception('host must be set');
             }
-            if($this->protocol == 'http' && $this->port == 80){
+            if ($this->protocol == 'http' && $this->port == 80) {
                 $this->port = null;
             }
-            if($this->protocol == 'https' && $this->port == 443){
+            if ($this->protocol == 'https' && $this->port == 443) {
                 $this->port = null;
             }
             $this->requestPath = $this->protocol . '://' . $this->host . ($this->port ? (':' . $this->port) : '') . ($this->routePrefix ? '/' . $this->routePrefix : '');
@@ -92,7 +81,8 @@ abstract class AbstractClient extends BaseObject
      */
     public function request($path): Request
     {
-        $request = ObjectHelper::create($this->request ?: Request::class);
+        $class = $this->request ?: Request::class;
+        $request = new $class;
         $request->setUrl($this->getRequestPath() . '/' . $path);
         return $request;
     }
