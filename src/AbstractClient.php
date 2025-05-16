@@ -4,86 +4,193 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
-use Verdient\http\Request;
-use Verdient\http\traits\Configurable;
+use ReflectionClass;
+use RuntimeException;
 
 /**
- * 客户端
+ * 抽象客户端基类，用于构造请求基础信息和生成请求实例。
+ *
+ * @template TConfigure of Configure
  * @author Verdient。
  */
-abstract class AbstractClient
+abstract class AbstractClient implements ClientInterface
 {
-    use Configurable;
-
     /**
-     * @var string 协议方法
+     * @var TConfigure 配置对象
+     *
      * @author Verdient。
      */
-    public $protocol = 'http';
+    public readonly ?Configure $configure;
 
     /**
-     * @var string 主机域名
+     * 基础 URI
+     *
+     *
      * @author Verdient。
      */
-    public $host = null;
+    protected ?string $baseUri = null;
 
     /**
-     * @var string 端口
+     * 命名空间
+     *
      * @author Verdient。
      */
-    public $port = null;
+    protected string|null|false $namespace = null;
 
     /**
-     * @var string 路由前缀
+     * 构造函数，初始化基本参数
+     *
+     * @param ?TConfigure $configure 配置对象
      * @author Verdient。
      */
-    public $routePrefix = null;
-
-    /**
-     * @var string 请求组件
-     * @author Verdient。
-     */
-    public $request;
-
-    /**
-     * @var string 请求路径
-     * @author Verdient。
-     */
-    protected $requestPath;
-
-    /**
-     * 获取请求路径
-     * @return string
-     * @author Verdient。
-     */
-    public function getRequestPath(): string
+    public function __construct(?Configure $configure)
     {
-        if (!$this->requestPath) {
-            if (!$this->host) {
-                throw new \Exception('host must be set');
-            }
-            if ($this->protocol == 'http' && $this->port == 80) {
-                $this->port = null;
-            }
-            if ($this->protocol == 'https' && $this->port == 443) {
-                $this->port = null;
-            }
-            $this->requestPath = $this->protocol . '://' . $this->host . ($this->port ? (':' . $this->port) : '') . ($this->routePrefix ? '/' . $this->routePrefix : '');
-        }
-        return $this->requestPath;
+        $this->configure = $configure ?: $this->newDefaultConfigure();
     }
 
     /**
-     * 请求
-     * @param string $methodName 方法名称
-     * @return Request
+     * 创建实例
+     *
+     * @param ?TConfigure $configure 配置对象
      * @author Verdient。
      */
-    public function request($path): Request
+    public static function create(?Configure $configure = null): static
     {
-        $class = $this->request ?: Request::class;
-        $request = new $class;
-        $request->setUrl($this->getRequestPath() . '/' . $path);
+        return new static($configure);
+    }
+
+    /**
+     * 获取命名空间
+     *
+     * @author Verdient。
+     */
+    protected function getNamespace(): string|false
+    {
+        if ($this->namespace === null) {
+            $reflectionClass = new ReflectionClass($this);
+
+            if ($reflectionClass->inNamespace()) {
+                $this->namespace = $reflectionClass->getNamespaceName();
+            } else {
+                $this->namespace = false;
+            }
+        }
+
+        return $this->namespace;
+    }
+
+    /**
+     * 创建新的默认配置
+     *
+     * @return TConfigure
+     * @author Verdient。
+     */
+    protected function newDefaultConfigure(): Configure
+    {
+        if (!$namespace = $this->getNamespace()) {
+            throw new RuntimeException(sprintf(
+                'Client class "%s" is not in a namespace, cannot resolve Configure class.',
+                get_class($this)
+            ));
+        }
+
+        $configureClass = $namespace . '\\Configure';
+
+        if (!class_exists($configureClass)) {
+            throw new RuntimeException(sprintf(
+                'Request class "%s" does not exist.',
+                $configureClass
+            ));
+        }
+
+        if (!is_subclass_of($configureClass, Configure::class)) {
+            throw new RuntimeException(sprintf(
+                'Request class "%s" must implement %s.',
+                $configureClass,
+                Configure::class
+            ));
+        }
+
+        return new $configureClass();
+    }
+
+    /**
+     * 构造并返回完整请求 URI
+     *
+     * @param string|null $path 请求路径，相对于路由前缀
+     * @author Verdient。
+     */
+    public function resolveUri(?string $path = null): string
+    {
+        $configure = $this->configure;
+
+        if ($this->baseUri === null) {
+            $port = $configure->getPort();
+
+            if (
+                ($configure->getProtocol() === 'http' && $configure->getPort() === 80)
+                || ($configure->getProtocol() === 'https' && $configure->getPort() === 443)
+            ) {
+                $port = null;
+            }
+
+            $this->baseUri = $configure->getProtocol() . '://' . $configure->getHost()
+                . ($port !== null ? ':' . $port : '')
+                . ($configure->getRoutePrefix() ? '/' . trim($configure->getRoutePrefix(), '/') : '');
+        }
+
+        if ($path === null || $path === '') {
+            return $this->baseUri;
+        }
+
+        return rtrim($this->baseUri, '/') . '/' . ltrim($path, '/');
+    }
+
+    /**
+     * 创建新的 Request 实例
+     *
+     * @throws RuntimeException 无法找到合适的请求类时抛出异常
+     * @author Verdient。
+     */
+    public function newRequest(): RequestInterface
+    {
+        if (!$namespace = $this->getNamespace()) {
+            throw new RuntimeException(sprintf(
+                'Client class "%s" is not in a namespace, cannot resolve Request class.',
+                get_class($this)
+            ));
+        }
+
+        $requestClass = $namespace . '\\Request';
+
+        if (!class_exists($requestClass)) {
+            throw new RuntimeException(sprintf(
+                'Request class "%s" does not exist.',
+                $requestClass
+            ));
+        }
+
+        if (!is_subclass_of($requestClass, RequestInterface::class)) {
+            throw new RuntimeException(sprintf(
+                'Request class "%s" must implement %s.',
+                $requestClass,
+                RequestInterface::class
+            ));
+        }
+
+        return new $requestClass($this->configure);
+    }
+
+    /**
+     * 创建并返回一个已设置好完整 URL 的请求实例
+     *
+     * @param string|null $path 请求相对路径
+     * @author Verdient。
+     */
+    public function request(?string $path = null): RequestInterface
+    {
+        $request = $this->newRequest();
+        $request->setUrl($this->resolveUri($path));
         return $request;
     }
 }
