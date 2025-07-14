@@ -26,7 +26,7 @@ abstract class AbstractRequest implements RequestInterface
 
     /**
      * 构造函数，初始化底层 Request 实例
-     *
+     * @param TConfigure $configure 配置对象
      * @author Verdient。
      */
     public function __construct(protected Configure $configure)

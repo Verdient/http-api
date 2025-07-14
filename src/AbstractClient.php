@@ -43,7 +43,7 @@ abstract class AbstractClient implements ClientInterface
      * @param ?TConfigure $configure 配置对象
      * @author Verdient。
      */
-    public function __construct(?Configure $configure)
+    public function __construct(?Configure $configure = null)
     {
         $this->configure = $configure ?: $this->newDefaultConfigure();
     }
@@ -163,19 +163,16 @@ abstract class AbstractClient implements ClientInterface
 
         $requestClass = $namespace . '\\Request';
 
-        if (!class_exists($requestClass)) {
-            throw new RuntimeException(sprintf(
-                'Request class "%s" does not exist.',
-                $requestClass
-            ));
-        }
-
-        if (!is_subclass_of($requestClass, RequestInterface::class)) {
-            throw new RuntimeException(sprintf(
-                'Request class "%s" must implement %s.',
-                $requestClass,
-                RequestInterface::class
-            ));
+        if (class_exists($requestClass)) {
+            if (!is_subclass_of($requestClass, RequestInterface::class)) {
+                throw new RuntimeException(sprintf(
+                    'Request class "%s" must implement %s.',
+                    $requestClass,
+                    RequestInterface::class
+                ));
+            }
+        } else {
+            $requestClass = Request::class;
         }
 
         return new $requestClass($this->configure);
