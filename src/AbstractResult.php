@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
+use Override;
 use Verdient\Http\Request;
 use Verdient\Http\Response;
 use Verdient\Http\Result as HttpResult;
@@ -54,6 +55,7 @@ abstract class AbstractResult implements ResultInterface
      * 构造函数
      *
      * @param HttpResult $result Http响应结果
+     *
      * @author Verdient。
      */
     public function __construct(HttpResult $result)
@@ -70,54 +72,54 @@ abstract class AbstractResult implements ResultInterface
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getIsOK(): bool
     {
         return $this->isOK;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getErrorCode(): int|string|null
     {
         return $this->errorCode;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getErrorMessage(): ?string
     {
         return $this->errorMessage;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getData(): mixed
     {
         return $this->data;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getRequest(): ?Request
     {
         return $this->response ? $this->response->getRequest() : null;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getResponse(): ?Response
     {
         return $this->response;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
+use Verdient\Http\Builder\BuilderInterface;
 use Verdient\Http\Request;
 use Verdient\Http\Serializer\Body\BodySerializerInterface;
 
@@ -33,6 +34,7 @@ interface RequestInterface
      * 设置请求 URL
      *
      * @param string $url 完整请求地址
+     *
      * @author Verdient。
      */
     public function setUrl(string $url): static;
@@ -41,6 +43,7 @@ interface RequestInterface
      * 设置请求方法
      *
      * @param string $method 请求方法
+     *
      * @author Verdient。
      */
     public function setMethod(string $method): static;
@@ -49,6 +52,7 @@ interface RequestInterface
      * 设置查询参数（Query String）
      *
      * @param array $queries 查询参数键值对数组
+     *
      * @author Verdient。
      */
     public function setQueries(array $queries): static;
@@ -56,15 +60,17 @@ interface RequestInterface
     /**
      * 设置请求体参数（如表单、JSON 的键值对）
      *
-     * @param array $bodies 请求体参数数组
+     * @param array|BuilderInterface $bodies 请求体参数数组或构造器
+     *
      * @author Verdient。
      */
-    public function setBodies(array $bodies): static;
+    public function setBodies(array|BuilderInterface $bodies): static;
 
     /**
      * 设置原始请求内容（字符串）
      *
      * @param string $content 原始请求体字符串
+     *
      * @author Verdient。
      */
     public function setContent(string $content): static;
@@ -73,13 +79,16 @@ interface RequestInterface
      * 设置请求体序列化器类型
      *
      * @param BodySerializerInterface $serializer 序列化器
+     *
      * @author Verdient。
      */
     public function setBodySerializer(BodySerializerInterface $serializer): static;
 
     /**
      * 设置头部
+     *
      * @param array $headers
+     *
      * @author Verdient。
      */
     public function setHeaders(array $headers): static;
@@ -87,7 +96,6 @@ interface RequestInterface
     /**
      * 发送请求并返回结果
      *
-     * @return ResultInterface 结果对象
      * @author Verdient。
      */
     public function send(): ResultInterface;

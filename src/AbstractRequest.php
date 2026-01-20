@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
+use Override;
+use Verdient\Http\Builder\BuilderInterface;
 use Verdient\Http\Request;
 use Verdient\Http\Serializer\Body\BodySerializerInterface;
 
@@ -13,6 +15,7 @@ use Verdient\Http\Serializer\Body\BodySerializerInterface;
  * 主要负责设置请求 URL、查询参数、请求体等内容，支持链式调用。
  *
  * @template TConfigure
+ *
  * @author Verdient。
  */
 abstract class AbstractRequest implements RequestInterface
@@ -26,7 +29,9 @@ abstract class AbstractRequest implements RequestInterface
 
     /**
      * 构造函数，初始化底层 Request 实例
+     *
      * @param TConfigure $configure 配置对象
+     *
      * @author Verdient。
      */
     public function __construct(protected Configure $configure)
@@ -35,28 +40,28 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * @inheritdoc
      * @return TConfigure
      * @author Verdient。
      */
+    #[Override]
     public function getConfigure(): Configure
     {
         return $this->configure;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function getRequest(): Request
     {
         return $this->request;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function setUrl(string $url): static
     {
         $this->request->setUrl($url);
@@ -64,9 +69,9 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function setMethod(string $method): static
     {
         $this->request->setMethod($method);
@@ -74,9 +79,9 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function setQueries(array $queries): static
     {
         $this->request->setQueries($queries);
@@ -84,19 +89,19 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
-    public function setBodies(array $bodies): static
+    #[Override]
+    public function setBodies(array|BuilderInterface $bodies): static
     {
         $this->request->setBodies($bodies);
         return $this;
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function setContent(string $content): static
     {
         $this->request->setContent($content);
@@ -104,9 +109,9 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function setBodySerializer(BodySerializerInterface $serializer): static
     {
         $this->request->setBodySerializer($serializer);
@@ -114,9 +119,9 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     public function setHeaders(array $headers): static
     {
         $this->request->setHeaders($headers);

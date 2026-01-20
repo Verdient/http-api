@@ -11,6 +11,7 @@ use RuntimeException;
  * 抽象客户端基类，用于构造请求基础信息和生成请求实例。
  *
  * @template TConfigure of Configure
+ *
  * @author Verdient。
  */
 abstract class AbstractClient implements ClientInterface
@@ -24,7 +25,6 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * 基础 URI
-     *
      *
      * @author Verdient。
      */
@@ -41,6 +41,7 @@ abstract class AbstractClient implements ClientInterface
      * 构造函数，初始化基本参数
      *
      * @param ?TConfigure $configure 配置对象
+     *
      * @author Verdient。
      */
     public function __construct(?Configure $configure = null)
@@ -52,6 +53,7 @@ abstract class AbstractClient implements ClientInterface
      * 创建实例
      *
      * @param ?TConfigure $configure 配置对象
+     *
      * @author Verdient。
      */
     public static function create(?Configure $configure = null): static
@@ -118,6 +120,7 @@ abstract class AbstractClient implements ClientInterface
      * 构造并返回完整请求 URI
      *
      * @param string|null $path 请求路径，相对于路由前缀
+     *
      * @author Verdient。
      */
     public function resolveUri(?string $path = null): string
@@ -150,6 +153,7 @@ abstract class AbstractClient implements ClientInterface
      * 创建新的 Request 实例
      *
      * @throws RuntimeException 无法找到合适的请求类时抛出异常
+     *
      * @author Verdient。
      */
     public function newRequest(): RequestInterface
@@ -181,7 +185,7 @@ abstract class AbstractClient implements ClientInterface
     /**
      * 创建并返回一个已设置好完整 URL 的请求实例
      *
-     * @param string|null $path 请求相对路径
+     * @param ?string $path 请求相对路径
      * @author Verdient。
      */
     public function request(?string $path = null): RequestInterface

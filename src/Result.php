@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Verdient\HttpAPI;
 
+use Override;
 use Verdient\Http\Result as HttpResult;
 use Verdient\HttpAPI\AbstractResult;
 
@@ -15,9 +16,9 @@ use Verdient\HttpAPI\AbstractResult;
 class Result extends AbstractResult
 {
     /**
-     * @inheritdoc
      * @author Verdient。
      */
+    #[Override]
     protected function resolve(HttpResult $result): void
     {
         $statusCode = $result->getStatusCode();

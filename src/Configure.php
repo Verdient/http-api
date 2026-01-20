@@ -21,7 +21,7 @@ class Configure
     /**
      * 端口号，可选，默认为 null 表示使用默认端口
      *
-     * @var int|null
+     * @author Verdient。
      */
     protected ?int $port = null;
 
@@ -41,6 +41,7 @@ class Configure
 
     /**
      * @param array $options 配置选项
+     *
      * @author Verdient。
      */
     public function __construct(array $options = [])
@@ -68,6 +69,7 @@ class Configure
      * 创建配置实例
      *
      * @param array $options 配置选项
+     *
      * @author Verdient。
      */
     public static function create(array $options = []): static
